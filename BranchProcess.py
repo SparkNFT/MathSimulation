@@ -17,6 +17,8 @@ numbers.append(1)
 profits.append(0)
 mean, var, skew, kurt = poisson.stats(mu, moments='mvsk')
 
+for i in range(0, GENERATION): 
+        numbers.append(1)
 
 
 
