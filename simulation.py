@@ -11,15 +11,13 @@ PROBABILITY = 0.3
 mu = PROBABILITY*SHILL_TIMES
 GENERATION = 10
 
-numbers = []
+generation_increase = 0
+numbers_generation = []
 profits = []
+profits_generation = []
 total_profit = 0
 pre_total = 0
 total = 0
-numbers.append(1)
-profits.append(0)
-rv = poisson.rvs(mu= mu , size = 500)
-print(rv)
 class edition:
     def __init__(self, father_id,  shill_price):
         self.father_id = father_id
@@ -33,18 +31,27 @@ def acceptShill(fatherId):
     if (editions[fatherId].remain_shilltimes == 0):
         return
     global total
+    global generation_increase
     new_edition = edition(fatherId, editions[fatherId].shill_price*LOSS_RATIO)
     editions[fatherId].remain_shilltimes -= 1
     editions[fatherId].profit += editions[fatherId].shill_price
     editions.append(new_edition)
+    profits.append(0)
     total += 1
+    generation_increase += editions[fatherId].shill_price
 
+def claim(NFT_id):
+    profits[NFT_id] += editions[NFT_id].profit*SUB_ROYALTY_FEE
+    profits[editions[NFT_id].father_id] += editions[NFT_id].profit*ROYALTY_FEE
+    editions[NFT_id].profit = 0
 
 def main():
     global total
     global pre_total
+    global generation_increase
     root_edition = edition(0, FIRST_SELL_PRICE)
     editions.append(root_edition)
+    profits.append(0)
     total += 1
     for i in range(0, GENERATION):
         rv = poisson.rvs(mu = mu, size = pre_total)
@@ -53,7 +60,15 @@ def main():
             for k in range(0, random_variabal):
                 acceptShill(j)
                 # print("haha")
+        numbers_generation.append(total - pre_total)
+        profits_generation.append(generation_increase)
         pre_total = total
+        generation_increase = 0
+    print("total number increase: ")
+    print(numbers_generation)
+    print("profits of generation: ")
+    print(profits_generation)
+
 
 
 
